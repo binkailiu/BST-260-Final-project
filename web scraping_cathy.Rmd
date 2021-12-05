@@ -1,0 +1,84 @@
+---
+title: "web scraping_cathy"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+#web scrap the abortion law table by country
+library(rvest)
+url <- 'https://en.wikipedia.org/wiki/Abortion_law'
+h <- read_html(url)
+class(h)
+h
+tab <- h %>% html_nodes("table")
+tab <- h %>% html_nodes("table") %>% .[6]
+head(tab)
+class(tab)
+tab <- tab %>% html_table %>% .[[1]] 
+class(tab)
+
+tab <- tab %>% setNames(c("Country", "Risk to life", "Risk to health", "Rape", "Fetal impairment", "Economic or social", "On request"))
+head(tab)
+
+```
+
+
+
+```{r}
+#data wrangling
+library(stringr)
+library(tidyverse)
+#remove rows that are subdivisions of a country
+#australia (row 12-23)
+#Bosnia and Herzegovina (row 38-40)
+#canada (row 50-62)
+#mexico (row 148-179)
+#nigeria (row 197-233)
+#united kingdom (row 299-302)
+#united states (row 304-354)
+
+new_tab <- tab[-c(12:23, 38:40, 50:62, 148:179, 197:233, 299:302, 304:354),]
+#212 rows remained
+#remove rows with "Country" in the country column
+new_tab <- subset(new_tab, Country != "Country")
+# 10 rows deleted, now there are 202 rows(countries)
+
+class(tab$Country)
+class(tab$'Risk to life')
+
+#delete citation number of country name 
+test <- new_tab$Country
+test <- gsub("(\\[).*", "", test)
+test <- str_trim(test)
+
+clean_tab <- new_tab  %>%
+  mutate(Country = test)
+
+#count rigorous score of abortion law by country: how many "prohibited" there are in each row (for each country)
+score <- mutate(clean_tab, score = 
+          str_count(clean_tab$`Risk to life`, "prohibited")
+         +str_count(clean_tab$`Risk to health`, "prohibited")
+         +str_count(clean_tab$Rape, "prohibited")
+         +str_count(clean_tab$`Fetal impairment`, "prohibited")
+         +str_count(clean_tab$`Economic or social`, "prohibited")
+         +str_count(clean_tab$`On request`, "prohibited"))
+
+#check the scores
+table(score$score)
+
+#check whether names match with UN official names (for later join purpose)
+
+#birth <- read_csv("\Users\binkai\Desktop\Fall 2021\BST 260\Final Project\BST-260-Final-project\WPP2019_FERT_F03_CRUDE_BIRTH_RATE.csv")
+
+
+```
