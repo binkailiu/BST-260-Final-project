@@ -102,6 +102,29 @@ gapminder_predictors_clean <- gapminder_predictors %>%
   select(country, gdp, years_in_school)
 gapminder_outcomes_clean <- gapminder_outcomes %>% 
   select(country, HIV_new, HIV_prev)
+
+
+###syphilis rate in preg women###
+syphi_raw <- read_csv("syphilis rate in preg women.csv")
+
+head(syphi_raw)
+
+syphi <- syphi_raw %>% filter(IsLatestYear=="TRUE") %>% select(`Location`,`Period`, `FactValueNumeric`)
+
+#table(syphi$Period)
+#Solomon islands 2017 data might be typo in the original dataset, so we manually input their 2015 data 
+
+syphi$Period[which(syphi$Location=="Solomon Islands")] <- 2015
+syphi$FactValueNumeric[which(syphi$Location=="Solomon Islands")] <- 13.2
+
+
+###syphilis rate in preg women###
+infant_raw <- read_csv("infant mortality rate.csv")
+
+head(infant_raw)
+infant <- infant_raw %>% filter(IsLatestYear=="TRUE") %>% select(`Location`,`Period`, `FactValueNumeric`)
+
+
 ```
 
 ```{r}
