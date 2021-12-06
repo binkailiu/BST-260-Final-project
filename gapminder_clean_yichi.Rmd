@@ -1,0 +1,96 @@
+---
+title: "gapminder_ML_yichi"
+author: "Yichi Zhang"
+date: "12/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(tidyverse) 
+library(readr)
+library(dplyr)
+
+###GDP per capita in US dollar inflation adjusted###
+gdp_raw <- read_csv("gdppercapita_us_inflation_adjusted.csv")
+#head(gdp_raw)
+gdp_long <- gdp_raw %>%
+  gather( year,gdp, `1959`:`2019`) %>%
+  drop_na()
+gdp_latest <- gdp_long %>% group_by(country) %>% slice_tail()
+#convert "k" into thousand
+gdp_latest <- gdp_latest %>%
+  mutate(gdp = case_when(
+    str_detect(gdp, "k") ~ as.numeric(str_extract(gdp, "[\\d\\.]+")) * 1000,
+    TRUE ~ as.numeric(gdp)
+  ))
+#change year column name
+colnames(gdp_latest)[2]<-"gdp_latest_year"
+
+###Education level(literacy rate)###
+edu_raw <-read_csv("literacy_rate_adult_total_percent_of_people_ages_15_and_above.csv")
+edu_long <- edu_raw %>%
+  gather( year, literacy, `1974`:`2010`) %>%
+  drop_na()
+edu_latest <- edu_long %>% group_by(country) %>% slice_tail()
+#change year column name
+colnames(edu_latest)[2]<-"edu_latest_year"
+
+###Newly infected HIV percent###
+HIV_new_raw<- read_csv("newly_hiv_infected_percent_age_15_49.csv")
+HIV_new_long <- HIV_new_raw %>%
+  gather( year, HIV_new, `1989`:`2010`) %>%
+  drop_na()
+HIV_new_latest <- HIV_new_long %>% group_by(country) %>% slice_tail()
+HIV_new_latest %>%
+  filter(as.numeric(year) > 1999)
+#no country has most recent data before 2000
+#convert percentages into numeric values
+HIV_new_latest <- HIV_new_latest %>%
+  mutate(HIV_new = as.numeric(HIV_new)/100)
+#change year column name
+colnames(HIV_new_latest)[2]<-"HIV_new_latest_year"
+
+
+
+###HIV prevalence### 
+HIV_prev_raw<- read_csv("adults_with_hiv_percent_age_15_49 (1).csv")
+HIV_prev_long <- HIV_prev_raw %>%
+  gather( year, HIV_prev, `1978`:`2010`) %>%
+  drop_na()
+HIV_prev_latest <- HIV_prev_long %>% group_by(country) %>% slice_tail()
+HIV_prev_latest %>%
+  filter(as.numeric(year) > 1999)
+#no country has most recent data before 2000
+#convert percentages into numeric values
+HIV_prev_latest <- HIV_prev_latest %>%
+  mutate(HIV_prev = as.numeric(HIV_prev)/100)
+#change year column name
+colnames(HIV_prev_latest)[2]<-"HIV_prev_latest_year"
+
+
+
+
+
+###Join 4 gapminder data
+#gapminder_predictors <- left_join(gdp_latest, edu_latest, by = "country") 
+gapminder_predictors <- full_join(gdp_latest, edu_latest)
+gapminder_outcomes <-full_join(HIV_new_latest, HIV_prev_latest) 
+
+
+###Value only
+gapminder_predictors_clean <- gapminder_predictors %>% 
+  select(country, gdp, literacy)
+gapminder_outcomes_clean <- gapminder_outcomes %>% 
+  select(country, HIV_new, HIV_prev)
+```
+
