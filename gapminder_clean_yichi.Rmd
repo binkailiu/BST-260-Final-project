@@ -104,3 +104,10 @@ gapminder_outcomes_clean <- gapminder_outcomes %>%
   select(country, HIV_new, HIV_prev)
 ```
 
+```{r}
+###Comparing country names in different datasets
+
+
+
+```
+
