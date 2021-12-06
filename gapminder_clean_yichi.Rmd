@@ -79,8 +79,6 @@ colnames(HIV_prev_latest)[2]<-"HIV_prev_latest_year"
 
 
 
-
-
 ###Join 4 gapminder data
 #gapminder_predictors <- left_join(gdp_latest, edu_latest, by = "country") 
 gapminder_predictors <- full_join(gdp_latest, edu_latest)
