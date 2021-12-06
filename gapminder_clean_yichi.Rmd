@@ -36,14 +36,25 @@ gdp_latest <- gdp_latest %>%
 #change year column name
 colnames(gdp_latest)[2]<-"gdp_latest_year"
 
-###Education level(literacy rate)###
-edu_raw <-read_csv("literacy_rate_adult_total_percent_of_people_ages_15_and_above.csv")
+# ###RETIRED Education level(literacy rate)###
+# edu_raw <-read_csv("literacy_rate_adult_total_percent_of_people_ages_15_and_above.csv")
+# edu_long <- edu_raw %>%
+#   gather( year, literacy, `1974`:`2010`) %>%
+#   drop_na()
+# edu_latest <- edu_long %>% group_by(country) %>% slice_tail()
+# #change year column name
+# colnames(edu_latest)[2]<-"edu_latest_year"
+
+###Education level(mean years in school women 15-44)###
+edu_raw <-read_csv("mean_years_in_school_women_of_reproductive_age_15_to_44.csv")
 edu_long <- edu_raw %>%
-  gather( year, literacy, `1974`:`2010`) %>%
+  gather( year, years_in_school, `1969`:`2008`) %>%
   drop_na()
 edu_latest <- edu_long %>% group_by(country) %>% slice_tail()
 #change year column name
 colnames(edu_latest)[2]<-"edu_latest_year"
+
+
 
 ###Newly infected HIV percent###
 HIV_new_raw<- read_csv("newly_hiv_infected_percent_age_15_49.csv")
@@ -78,15 +89,17 @@ HIV_prev_latest <- HIV_prev_latest %>%
 colnames(HIV_prev_latest)[2]<-"HIV_prev_latest_year"
 
 
+
+
+
 ###Join 4 gapminder data
-#gapminder_predictors <- left_join(gdp_latest, edu_latest, by = "country") 
 gapminder_predictors <- full_join(gdp_latest, edu_latest)
 gapminder_outcomes <-full_join(HIV_new_latest, HIV_prev_latest) 
 
 
 ###Value only
 gapminder_predictors_clean <- gapminder_predictors %>% 
-  select(country, gdp, literacy)
+  select(country, gdp, years_in_school)
 gapminder_outcomes_clean <- gapminder_outcomes %>% 
   select(country, HIV_new, HIV_prev)
 ```
