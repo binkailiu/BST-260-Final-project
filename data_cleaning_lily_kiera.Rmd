@@ -1,0 +1,164 @@
+---
+title: "Data Cleaning"
+author: "Lily Zhong, Xinhui Zhang"
+date: "12/5/2021"
+output: html_document
+---
+## set up
+
+### import packages
+```{r import packages}
+library(tidyverse)
+library(readxl)
+library(stringr)
+```
+
+### import data sets
+```{r import data sets}
+excel_sheets("contraceptive full (UN).xlsx")
+# crude birth rate/ 1K (BR)
+BR <- read_xlsx("WPP2019_FERT_F03_CRUDE_BIRTH_RATE.xlsx", 
+                range = "ESTIMATES!C17:U272")
+# mean age of childbearing (MAC)
+MAC <- read_xlsx("WPP2019_FERT_F08_MEAN_AGE_CHILDBEARING.xlsx", 
+                 range = "ESTIMATES!C17:U272")
+# contraceptive methods (CM)
+CM <- read_xlsx("contraceptive full (UN).xlsx", 
+                range = "By methods!A8:W1377", na = "..")
+```
+
+
+## data cleaning
+
+### code geographic region
+```{r code geographic region}
+# geographic region matched with parent code
+geographic <- data.frame(region_s = c("Eastern Africa", "Middle Africa", 
+                                      "Southern Africa", "Western Africa", 
+                                      "Northern Africa", "Western Asia", 
+                                      "Central Asia", "Southern Asia", 
+                                      "Eastern Asia", "South-Eastern Asia", 
+                                      "Caribbean", "Central America",
+                                      "South America", 
+                                      "Australia and New Zealand", "Melanesia",
+                                      "Micronesia", "Polynesia", 
+                                      "Eastern Europe", "Northern Europe",
+                                      "Southern Europe", "Western Europe", 
+                                      "Northern America"),
+                         region_l = c(rep("Sub-saharan Africa", 4),
+                                      rep("Northern Africa and Western Asia", 2),
+                                      rep("Central and Southern Asia", 2),
+                                      rep("Eastern and South-eastern Asia", 2),
+                                      rep("Latin America and the Caribbean", 3),
+                                      "Australia and New Zealand",
+                                      rep("Other Oceania", 3),
+                                      rep("Europe and Northern America", 5)),
+                         code = c(910, 911, 913, 914, 912, 922, 5500, 5501, 906, 
+                                  920, 915, 916, 931, 927, 928, 954, 957, 923, 
+                                  924, 925, 926, 918))
+```
+
+
+### crude birth rate/ 1K (BR)
+```{r crude birth rate/ 1K (BR)}
+BR <- BR %>% 
+  select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
+  # keep relevant info
+  setNames(c("country_area", "code", "crude_birth_rate_perK")) %>% 
+  # rename: no spaces in names
+  filter(code %in% geographic$code) %>% 
+  # remove rows for world/regions/etc., keep country-level info
+  full_join(geographic, by = "code") %>% 
+  # add geographic region to the data set
+  select(-code) %>% 
+  # remove variable "code"
+  mutate(crude_birth_rate_perK = as.numeric(crude_birth_rate_perK)) 
+  # change parameter to numeric
+
+# check
+summary(BR)
+head(BR)
+```
+
+### data cleaning: mean age of childbearing (MAC)
+```{r mean age of childbearing (MAC)}
+MAC <- MAC %>% 
+  select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
+  # keep relevant info
+  setNames(c("country_area", "code", "mean_age_of_childbearing")) %>% 
+  # rename: no spaces in names
+  filter(code %in% geographic$code) %>% 
+  # remove rows for world/regions/etc., keep country-level info
+  select(-code) %>% 
+  # remove variable "code"
+  mutate(mean_age_of_childbearing = as.numeric(mean_age_of_childbearing)) 
+  # change parameter to numeric
+
+# check
+summary(MAC)
+head(MAC)
+```
+
+### data cleaning: contraceptive methods (for Shiny)
+```{r contraceptive methods (for Shiny)}
+# set names
+names(CM) <- as.character(c("country_area", "ISO", "start", "end", "age_group", 
+                            CM[1, 6:23]))
+
+names(CM) <- names(CM) %>%
+  str_to_lower() %>%
+  str_replace_all("[\\n]", "") %>% # remove "\n" in female/male sterilization
+  str_replace_all("\\s\\(\\w+\\)$", "") %>% # remove " (LAM)"
+  str_replace_all("[\\s\\/]", "_") # replace spaces with underscores
+
+CM <- CM[-1,] %>%  # remove first row with only column name information
+  mutate_at(6:23, as.numeric) # change to numeric
+
+most_recent <- function(var){ # function input: enclose var in quotes!
+  CM %>%
+    filter(end >= 2000) %>% drop_na(!!var) %>% group_by(country_area) %>% 
+    slice(which.max(end)) %>% select(country_area, !!var)
+} # function output (a data frame): 
+  # the most recent value of a given contraceptive method for each country
+
+methods <- names(CM)[6:23] 
+  # create a variable to store contraceptive methods
+CM_2000 <- data.frame(country_area = levels(as.factor(CM$country_area)))
+  # create a new data frame; first column = 196 distinct country names
+
+for (method in methods){ # loop over all contraceptive methods
+  temp <- as.data.frame(most_recent(method)) 
+    # use these methods as the input for most_recent()
+  CM_2000 <- left_join(CM_2000, temp, by = "country_area")
+    # append the outputs to CM_new
+}
+
+CM_2000 <- CM_2000 %>% 
+  mutate(invasive = rowSums(.[,c("female_sterilization", "male_sterilization", 
+                                 "iud", "implant")], na.rm = TRUE),
+         medication = rowSums(.[,c("injectable", "pill")], na.rm = TRUE),
+         barrier = rowSums(.[,c("male_condom", "female_condom", 
+                                "vaginal_barrier_methods")], na.rm = TRUE),
+         other_modern = rowSums(.[,c("lactational_amenorrhea_method", 
+                                     "emergency_contraception", 
+                                     "other_modern_methods")], na.rm = TRUE),
+         traditional = rowSums(.[,c("rhythm", "withdrawal", 
+                                    "other_traditional_methods")], na.rm = TRUE)
+  )
+```
+
+### contraceptive prevalence (for prediction)
+```{r contraceptive prevalence (for prediction)}
+# choose latest year (>2010), else drop whole country
+# keep "Any method" & "Any modern method"
+CM_prev <- CM_2000[, 1:3]
+```
+
+
+## Analysis
+
+### Shiny app: contraceptive methods
+```{r Shiny app: contraceptive methods}
+
+```
+
