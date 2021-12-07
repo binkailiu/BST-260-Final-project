@@ -38,7 +38,7 @@ syphi$FactValueNumeric[which(syphi$Location=="Solomon Islands")] <- 13.2
 infant_raw <- read_csv("infant mortality rate.csv")
 
 head(infant_raw)
-infant <- infant_raw %>% filter(IsLatestYear=="TRUE") %>% select(`Location`,`Period`, `FactValueNumeric`)
+infant <- infant_raw %>% filter(IsLatestYear=="TRUE", Dim1 == "Both sexes") %>% select(`Location`,`Period`, `FactValueNumeric`)
 
 
 ```
