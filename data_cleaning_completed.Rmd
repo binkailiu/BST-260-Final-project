@@ -37,7 +37,7 @@ library(readxl)
 
 #### Predictor: GDP
 
-* Data source:
+* Data source:[Data source]()
 * Data description:
 
 ```{r predictor GDP, warning=FALSE, message=FALSE}
@@ -89,7 +89,7 @@ rm(edu_raw); rm(edu_long)
 
 #### Predictor: Geographic region
 
-* Data source:
+* Data source: 
 * Data description:
 
 ```{r geographic region}
@@ -480,11 +480,55 @@ rm(list=setdiff(ls(), "world_clean"))
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 ```{r}
 
+
+data <- read.csv("world_clean.csv")
+
+#Model 1-Linear model, outcome birth rate
+
+lm_birth_rate <- lm(crude_birth_rate_perK ~ region_l + years_in_school + gdp +
+                      score + any_method + mean_age_of_childbearing, data = data) #Create the linear regression
+summary(lm_birth_rate) 
+
+plot(lm_birth_rate$residuals, pch = 16, col = "red")
+
+
+#Model 2-Linear model, outcome infant mortality rate
+
+lm_infant_mortality <- lm(infant_mortality ~ region_l + years_in_school + gdp +
+                      score + any_method + mean_age_of_childbearing, data = data) #Create the linear regression
+summary(lm_infant_mortality) 
+
+plot(lm_infant_mortality $residuals, pch = 16, col = "blue")
+
+
+#Model 3-Linear model, outcome infant mortality rate
+
+lm_syphilis <- lm(syphilis_rate ~ region_l + years_in_school + gdp +
+                      score + any_method + mean_age_of_childbearing, data = data) #Create the linear regression
+summary(lm_syphilis) 
+
+plot(lm_syphilis$residuals, pch = 16, col = "green")
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ## Final Analysis
 What did you learn about the data? How did you answer the questions? How can you justify your answers? Note that 1 type of analysis per team member is required. A Shiny app counts as a type of analysis.
 ```{r}
+
+
+
+
 
 ```
 
