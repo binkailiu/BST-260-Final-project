@@ -504,7 +504,7 @@ plot(lm_infant_mortality $residuals, pch = 16, col = "blue")
 #Model 3-Linear model, outcome infant mortality rate
 
 lm_syphilis <- lm(syphilis_rate ~ region_l + years_in_school + gdp +
-                      score + any_method + mean_age_of_childbearing, data = data) #Create the linear regression
+                      score + any_method, data = data) #Create the linear regression
 summary(lm_syphilis) 
 
 plot(lm_syphilis$residuals, pch = 16, col = "green")
