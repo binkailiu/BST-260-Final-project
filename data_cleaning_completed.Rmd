@@ -94,19 +94,7 @@ rm(edu_raw); rm(edu_long)
 
 ```{r geographic region}
 # code geographic regions & matched them with parent code in the UN data sets
-geographic <- data.frame(region_s = c("Eastern Africa", "Middle Africa", 
-                                      "Southern Africa", "Western Africa", 
-                                      "Northern Africa", "Western Asia", 
-                                      "Central Asia", "Southern Asia", 
-                                      "Eastern Asia", "South-Eastern Asia", 
-                                      "Caribbean", "Central America",
-                                      "South America", 
-                                      "Australia and New Zealand", "Melanesia",
-                                      "Micronesia", "Polynesia", 
-                                      "Eastern Europe", "Northern Europe",
-                                      "Southern Europe", "Western Europe", 
-                                      "Northern America"),
-                         region_l = c(rep("Sub-saharan Africa", 4),
+geographic <- data.frame(region_l = c(rep("Sub-saharan Africa", 4),
                                       rep("Northern Africa and Western Asia", 2),
                                       rep("Central and Southern Asia", 2),
                                       rep("Eastern and South-eastern Asia", 2),
@@ -117,6 +105,20 @@ geographic <- data.frame(region_s = c("Eastern Africa", "Middle Africa",
                          code = c(910, 911, 913, 914, 912, 922, 5500, 5501, 906, 
                                   920, 915, 916, 931, 927, 928, 954, 957, 923, 
                                   924, 925, 926, 918))
+
+# dummy code region_l (categorical var.) 
+regionL <- as.data.frame(dummy.code(geographic$region_l))
+
+# rename the dummy coded variables & combine them with the original data set
+regionL <- rename(regionL, r_Subsaharan_Africa = `Sub-saharan Africa`)
+regionL <- rename(regionL, r_Euro_N.America = `Europe and Northern America`)
+regionL <- rename(regionL, r_LatinAmerica = `Latin America and the Caribbean`)
+regionL <- rename(regionL, r_NW.Africa = `Northern Africa and Western Asia`)
+regionL <- rename(regionL, r_ESE.Asia = `Eastern and South-eastern Asia`)
+regionL <- rename(regionL, r_CS.Asia = `Central and Southern Asia`)
+regionL <- rename(regionL, r_OtherOceania = `Other Oceania`)
+regionL <- rename(regionL, r_AU_NZ = `Australia and New Zealand`)
+geographic <- cbind(geographic, regionL)
 ```
 
 #### Predictor: Contraceptive use
@@ -148,7 +150,7 @@ CM <- CM[-1,] %>%
 most_recent <- function(var){ 
   CM %>%
     filter(end >= 2000) %>% drop_na(!!var) %>% group_by(country_area) %>% 
-    slice(which.max(end)) %>% select(country_area, !!var)}
+    slice(which.max(end)) %>% dplyr::select(country_area, !!var)}
   # function input should be enclosed in quotes
 
 # create a variable to store contraceptive methods
@@ -167,15 +169,21 @@ for (method in methods){
 # collapse some categories of contraceptive methods into larger groups
 CM_2000 <- CM_2000 %>% 
   mutate(invasive = rowSums(.[,c("female_sterilization", "male_sterilization", 
-                                 "iud", "implant")], na.rm = TRUE),
-         medication = rowSums(.[,c("injectable", "pill")], na.rm = TRUE),
+                                 "iud", "implant")], na.rm = T),
+         medication = rowSums(.[,c("injectable", "pill")], na.rm = T),
          barrier = rowSums(.[,c("male_condom", "female_condom", 
-                                "vaginal_barrier_methods")], na.rm = TRUE),
+                                "vaginal_barrier_methods")], na.rm = T),
          other_modern = rowSums(.[,c("lactational_amenorrhea_method", 
                                      "emergency_contraception", 
-                                     "other_modern_methods")], na.rm = TRUE),
+                                     "other_modern_methods")], na.rm = T),
          traditional = rowSums(.[,c("rhythm", "withdrawal", 
-                                    "other_traditional_methods")], na.rm = TRUE))
+                                    "other_traditional_methods")], na.rm = T)) 
+
+# remove unwanted columns
+CM_2000 <- CM_2000 %>% 
+  dplyr::select(c(country_area, any_method, any_modern_method,
+                  any_traditional_method, invasive, medication, barrier, 
+                  other_modern, traditional))
 
 # delete unwanted objects
 rm(CM); rm(method); rm(methods); rm(most_recent)
@@ -193,16 +201,15 @@ MAC <- read_xlsx("rawdata_mean_age_childbearing.xlsx",
 
 # data wrangling
 MAC <- MAC %>% 
-  select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
+  dplyr::select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
   # keep relevant info
   setNames(c("country_area", "code", "mean_age_of_childbearing")) %>% 
   # rename: no spaces in names
   filter(code %in% geographic$code) %>% 
   # remove rows for world/regions/etc., keep country-level info
-  select(-code) %>% 
+  dplyr::select(-code) %>% 
   # remove variable "code"
-  mutate(mean_age_of_childbearing = as.numeric(mean_age_of_childbearing)) 
-  # change parameter to numeric
+  mutate(mean_age_of_childbearing = as.numeric(mean_age_of_childbearing))
 ```
 
 #### Predictor: Abortion law
@@ -240,7 +247,7 @@ score <- mutate(clean_tab, score =
          +str_count(clean_tab$`Fetal impairment`, "prohibited")
          +str_count(clean_tab$`Economic or social`, "prohibited")
          +str_count(clean_tab$`On request`, "prohibited"))
-score <- score %>% select(c("Country", "score"))
+score <- score %>% dplyr::select(c("Country", "score"))
 names(score) <- c("country", "score")
 
 # delete unwanted data sets & vectors
@@ -284,7 +291,7 @@ infant <- read_csv("rawdata_infant_mortality.csv")
 # select the columns we want
 infant <- infant %>% 
   filter(IsLatestYear=="TRUE", Dim1 == "Both sexes") %>% 
-  select(`Location`,`Period`, `FactValueNumeric`)
+  dplyr::select(`Location`,`Period`, `FactValueNumeric`)
 ```
 
 #### Outcome: Crude birth rate
@@ -298,7 +305,7 @@ BR <- read_xlsx("rawdata_birth_rate.xlsx", range = "ESTIMATES!C17:U272")
 
 # data wrangling
 BR <- BR %>% 
-  select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
+  dplyr::select(`Region, subregion, country or area *`, `Parent code`, `2015-2020`) %>% 
   # keep relevant info
   setNames(c("country_area", "code", "crude_birth_rate_perK")) %>% 
   # rename: no spaces in names
@@ -306,13 +313,13 @@ BR <- BR %>%
   # remove rows for world/regions/etc., keep country-level info
   full_join(geographic, by = "code") %>% 
   # add geographic region to the data set
-  select(-code) %>% 
+  dplyr::select(-code) %>% 
   # remove variable "code"
   mutate(crude_birth_rate_perK = as.numeric(crude_birth_rate_perK)) 
   # change parameter to numeric
 ```
 
-### Join the data sets
+### Join the tables & Final clean-up
 
 ```{r join the tables, warning=FALSE, message=FALSE}
 #### combime data sets from the same source ####
@@ -419,22 +426,29 @@ Score_GAP_UN_WHO <- full_join(score, gapminder_full) %>%
   full_join(., UNdata_BR_CM_MAC) %>%
   full_join(., WHOdata_infant)
 world_clean <- Score_GAP_UN_WHO %>% 
-  select(-gdp_latest_year, -edu_latest_year, 
-         -HIV_prev_latest_year)
+  dplyr::select(-gdp_latest_year, -edu_latest_year, 
+         -HIV_prev_latest_year, -Period)
 
-#### remove temporary data sets ####
+####  remove temporary data sets #### 
 rm(list=setdiff(ls(), "world_clean"))
 
 #### export data frame to csv ####
 write.csv(world_clean,"world_clean.csv", row.names = FALSE)
 ```
 
+
+
+
+
+
+
+
+
+
 ## Exploratory Analysis
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 
 ```{r}
-
-
 data <- read.csv("world_clean.csv")
 
 #Model 1-Linear model, outcome birth rate
