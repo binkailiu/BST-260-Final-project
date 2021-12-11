@@ -247,38 +247,12 @@ names(score) <- c("country", "score")
 rm(url); rm(h); rm(tab); rm(new_tab); rm(clean_tab); rm(test)
 ```
 
-#### Outcomes: HIV incidence & prevalence
+#### Outcome: HIV prevalence
 
 * Data source:
 * Data description:
 
 ```{r HIV, message=FALSE}
-#####################
-####HIV incidence####
-#####################
-
-# read in the data set
-HIV_new_raw<- read_csv("rawdata_HIV_incidence.csv")
-
-# convert to long format & remove NAs
-HIV_new_long <- HIV_new_raw %>%
-  gather(year, HIV_new, `1989`:`2010`) %>%
-  drop_na()
-
-# keep the most recent data
-HIV_new_latest <- HIV_new_long %>% group_by(country) %>% slice_tail()
-  # all data comes after 2000
-
-# change year column name
-colnames(HIV_new_latest)[2]<-"HIV_new_latest_year"
-
-# delete unwanted data sets
-rm(HIV_new_raw); rm(HIV_new_long)
-
-######################
-####HIV prevalence####
-######################
-
 # read in the data set
 HIV_prev_raw<- read_csv("rawdata_HIV_prevalence.csv")
 
@@ -296,25 +270,6 @@ colnames(HIV_prev_latest)[2]<-"HIV_prev_latest_year"
 
 # delete unwanted data sets
 rm(HIV_prev_raw); rm(HIV_prev_long)
-```
-
-#### Outcome: Syphilis rate
-
-* Data source:
-* Data description:
-
-```{r syphilis, message=FALSE}
-# read in the data set
-syphi <- read_csv("rawdata_syphilis.csv")
-
-# select the columns we want
-syphi <- syphi %>% filter(IsLatestYear=="TRUE") %>% 
-  select(`Location`,`Period`, `FactValueNumeric`)
-
-# Solomon islands 2017 data might be typo in the original data set, 
-  # so we manually input their 2015 data 
-syphi$Period[which(syphi$Location=="Solomon Islands")] <- 2015
-syphi$FactValueNumeric[which(syphi$Location=="Solomon Islands")] <- 13.2
 ```
 
 #### Outcome: Infant mortality rate
@@ -364,26 +319,24 @@ BR <- BR %>%
 
 # combine gapminder data sets
 gapminder_predictors <- full_join(gdp_latest, edu_latest)
-gapminder_outcomes <-full_join(HIV_new_latest, HIV_prev_latest) 
-gapminder_full <- full_join(gapminder_predictors,gapminder_outcomes)
+gapminder_full <- full_join(gapminder_predictors, HIV_prev_latest)
 
 # combine UN data sets
 CM_2000$country_area <- 
-  str_replace_all(CM_2000$country_area, "Democratic People's Republic of Korea", 
-                                       "Dem. People's Republic of Korea")
+  str_replace_all(CM_2000$country_area, "Democratic People's Republic of Korea",
+                  "Dem. People's Republic of Korea")
 BR$country_area <- 
   str_replace_all(BR$country_area, "Czechia", "Czech Republic")
 MAC$country_area <- 
   str_replace_all(MAC$country_area, "Czechia", "Czech Republic")
 
 UNdata_BR_CM_MAC <- full_join(BR,CM_2000) %>% full_join(.,MAC)
+colnames(UNdata_BR_CM_MAC)[1] <- "country"
 
 # combine WHO data sets
 colnames(infant)[3]<- "infant_mortality"
-colnames(syphi)[3]<- "syphilis_rate"
-WHOdata_infant_syphi <- left_join(infant,syphi, by="Location")
-colnames(UNdata_BR_CM_MAC)[1] <- "country"
-colnames(WHOdata_infant_syphi)[1] <- "country"
+WHOdata_infant <- infant
+colnames(WHOdata_infant)[1] <- "country"
 
 
 #### recode country names (reference: abortion law table) ####
@@ -457,27 +410,28 @@ country_key_WHO = c(
   "United States of America"="United States",
   "Venezuela (Bolivarian Republic of)"="Venezuela",
   "Viet Nam"="Vietnam")
-WHOdata_infant_syphi <- WHOdata_infant_syphi %>%   
+WHOdata_infant <- WHOdata_infant %>%   
   mutate(country = recode_factor(country, !!!country_key_WHO))
 
 
 #### combine all data sets ####
 Score_GAP_UN_WHO <- full_join(score, gapminder_full) %>%
   full_join(., UNdata_BR_CM_MAC) %>%
-  full_join(., WHOdata_infant_syphi)
+  full_join(., WHOdata_infant)
 world_clean <- Score_GAP_UN_WHO %>% 
-  select(-gdp_latest_year, -edu_latest_year, -HIV_new_latest_year,
-         -HIV_prev_latest_year, -Period.x,-Period.y)
+  select(-gdp_latest_year, -edu_latest_year, 
+         -HIV_prev_latest_year)
 
 #### remove temporary data sets ####
 rm(list=setdiff(ls(), "world_clean"))
 
 #### export data frame to csv ####
-# write.csv(world_clean,"world_clean.csv", row.names = FALSE)
+write.csv(world_clean,"world_clean.csv", row.names = FALSE)
 ```
 
 ## Exploratory Analysis
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
+
 ```{r}
 
 
@@ -508,18 +462,6 @@ lm_syphilis <- lm(syphilis_rate ~ region_l + years_in_school + gdp +
 summary(lm_syphilis) 
 
 plot(lm_syphilis$residuals, pch = 16, col = "green")
-
-
-
-
-
-
-
-
-
-
-
-
 ```
 
 ## Final Analysis
