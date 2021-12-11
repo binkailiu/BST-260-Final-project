@@ -37,8 +37,8 @@ library(readxl)
 
 #### Predictor: GDP
 
-* Data source:
-* Data description:
+* Data source: Gapminder
+* Data description: GDP per capita(divided by midyear population), calculated in constant 2010 US dollars
 
 ```{r predictor GDP, warning=FALSE, message=FALSE}
 # read in the data set
@@ -65,8 +65,8 @@ rm(gdp_raw); rm(gdp_long)
 
 #### Predictor: Education level
 
-* Data source:
-* Data description:
+* Data source: Gapminder
+* Data description: average years in school for women of reproductive age 15 to 44, including primary, secondary and tertiary education. Since gapminder did not have a data for both sexes and our interest is reproductive health, we choose female gender group for this predictor
 
 ```{r education level, message=FALSE}
 # read in the data set
@@ -249,8 +249,8 @@ rm(url); rm(h); rm(tab); rm(new_tab); rm(clean_tab); rm(test)
 
 #### Outcomes: HIV incidence & prevalence
 
-* Data source:
-* Data description:
+* Data source: Gapminder
+* Data description: Estimated percentage of adults aged 15-49 years that are newly infected with HIV (incidence); Estimated percentage of adults aged 15-49 years that are infected by HIV (prevalence)
 
 ```{r HIV, message=FALSE}
 #####################
