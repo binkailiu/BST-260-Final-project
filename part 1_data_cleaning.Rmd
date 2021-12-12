@@ -7,7 +7,6 @@ output: html_document
 
 Note: All original datasets used for our analysis are accessible through both our github repository and website links in later sections. You can also direct to the catelog in the Readme.md file in our github repository to check data sources.
 
-
 ## Overview and Motivation
 In 2019, over 1 out of 1.9 billion Women of the Reproductive Age group (15-49 years old) worldwide need family planning, according to WHO; of these, around 800 million use contraceptive methods. Unfortunately, almost 300 million have an unmet need for contraception (WHO). Access to contraceptives is heterogeneous around the world. There could be many reasons for the variation in contraceptives use: taboos, lack of sexual education, armed conflicts, to name a few. Also, women’s acceptance could be diminished by religious opposition, fear of side effects, and poor quality of medical counseling and service.
 It is a human right to decide the number and spacing of their children; contraceptives play a crucial role in helping to achieve that right. Moreover, it is well documented that the use of condoms helps to reduce the risk of getting sexually transmitted diseases.
@@ -450,11 +449,10 @@ write.csv(world_clean,"world_clean.csv", row.names = FALSE)
 ```
 
 
-## Merge cleaned data set (world_clean.csv) with maps for Shiny app
+### Merge cleaned data set (`world_clean.csv`) with maps for Shiny app
 
 ```{r}
-# load packages
-library(tidyverse)
+# load the map package
 library(maps)
 ```
 
