@@ -14,7 +14,7 @@ library(rpart); library(rpart.plot); library(FNN)
 library(ggplot2); library(ggthemes); library(ggpubr)
 
 world_clean <- read_csv("world_clean.csv")
-df.machineL <- world_clean %>% drop_na() # 137 countries
+df.machineL <- world_clean %>% drop_na()
 rm(world_clean)
 ```
 
@@ -32,7 +32,7 @@ index.train.IM <-
 index.train.HIV <- 
   createDataPartition(y = df.machineL$HIV_prev, p = 0.7, list = F)
 
-# split the data sets (train set = 97 rows, test set = 40 rows)
+# split the data sets
 df.BR.train.tree <- slice(df.machineL, index.train.BR) 
 df.BR.test.tree <- slice(df.machineL, -index.train.BR) 
 df.IM.train.tree <- slice(df.machineL, index.train.IM) 

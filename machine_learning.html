@@ -386,7 +386,7 @@ library(rpart); library(rpart.plot); library(FNN)
 library(ggplot2); library(ggthemes); library(ggpubr)
 
 world_clean &lt;- read_csv(&quot;world_clean.csv&quot;)
-df.machineL &lt;- world_clean %&gt;% drop_na() # 137 countries
+df.machineL &lt;- world_clean %&gt;% drop_na()
 rm(world_clean)</code></pre>
 </div>
 <div id="decision-trees-for-birth-rate-and-infant-mortality-rate" class="section level3">
@@ -403,7 +403,7 @@ index.train.IM &lt;-
 index.train.HIV &lt;- 
   createDataPartition(y = df.machineL$HIV_prev, p = 0.7, list = F)
 
-# split the data sets (train set = 97 rows, test set = 40 rows)
+# split the data sets
 df.BR.train.tree &lt;- slice(df.machineL, index.train.BR) 
 df.BR.test.tree &lt;- slice(df.machineL, -index.train.BR) 
 df.IM.train.tree &lt;- slice(df.machineL, index.train.IM) 
