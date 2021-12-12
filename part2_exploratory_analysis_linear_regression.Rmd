@@ -2,7 +2,7 @@
 output: html_document
 ---
 
-## Exploratory Analysis: Univariate Analysis and Linear Regression
+## Exploratory Analysis (Univariate Analysis) and Linear Regression
 
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 
@@ -106,7 +106,8 @@ The abortion legality score is statistically positive. Notwithstanding, the resi
 
 ```{r br-score, fig.align="center"}
 # fit the model
-lm_birth_rate_predicted_by_score <- lm(crude_birth_rate_perK ~  score , data = data) 
+lm_birth_rate_predicted_by_score <- 
+  lm(crude_birth_rate_perK ~  score , data = data) 
 # get the coefficient table
 summary(lm_birth_rate_predicted_by_score)$coeff
 # make a residual plot
@@ -120,7 +121,8 @@ Regions have different effects on child birth, but for some cases the effect is 
 
 ```{r br-region, fig.align="center"}
 # fit the model
-lm_birth_rate_predicted_by_regionL <- lm(crude_birth_rate_perK ~  region_l , data = data) 
+lm_birth_rate_predicted_by_regionL <- 
+  lm(crude_birth_rate_perK ~  region_l , data = data) 
 # get the coefficient table
 summary(lm_birth_rate_predicted_by_regionL)$coeff
 # make a residual plot
@@ -133,7 +135,8 @@ Because of this, it is sensible to use dummy coded variables for those regions w
 ```{r br-region-dummy, fig.align="center"}
 # fit the model
 lm_birth_rate_predicted_by_regionL <- 
-  lm(crude_birth_rate_perK ~  r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia , data = data) 
+  lm(crude_birth_rate_perK ~  r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia , 
+     data = data) 
 # get the coefficient table
 summary(lm_birth_rate_predicted_by_regionL)$coeff
 # make a residual plot
@@ -175,10 +178,11 @@ plot(lm_birth_rate_all_features$residuals, pch = 16, col = "pink",
 
 `gdp` and `mean_age_of_childbearing` are not statistically significant. Let's remove them.
 
-```{rr br-sig, fig.align="center"}
+```{r br-sig, fig.align="center"}
 # fit the model
 lm_birth_rate_all_features <- 
-  lm(crude_birth_rate_perK ~   r_Subsaharan_Africa+ r_OtherOceania  + r_CS.Asia+ any_method+years_in_school+score, data = data) 
+  lm(crude_birth_rate_perK ~ r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia + 
+       any_method + years_in_school + score, data = data) 
 # get the coefficient table
 summary(lm_birth_rate_all_features)$coeff
 # plot the residuals
@@ -312,7 +316,7 @@ Because of this, it is sensible to use a dummy for those regions where the effec
 ```{r im-region-dummy, fig.align="center"}
 # fit the model
 lm_infant_mortality_predicted_by_regionL <- 
-  lm(infant_mortality ~  r_Subsaharan_Africa+ r_OtherOceania  + r_CS.Asia , 
+  lm(infant_mortality ~  r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia, 
      data = data) 
 # get the correlation table
 summary(lm_infant_mortality_predicted_by_regionL)$coeff
@@ -497,7 +501,7 @@ Not a single region explains HIV prevalence.
 
 ```{r hiv-region, fig.align="center"}
 # fit the model
-lm_HIV_prev_predicted_by_regionL <- lm(HIV_prev ~ region_l , data = data_2) 
+lm_HIV_prev_predicted_by_regionL <- lm(HIV_prev ~ region_l, data = data_2) 
 # get the correlation table
 summary(lm_HIV_prev_predicted_by_regionL)$coeff
 # make a residual plot
@@ -524,7 +528,8 @@ plot(lm_HIV_prev_all_features$residuals,
 
 ```{r hiv-remove anymethods and score, fig.align="center"}
 # fit the model
-lm_HIV_prev_all_features <- lm(HIV_prev ~ barrier + gdp + years_in_school, data = data) 
+lm_HIV_prev_all_features <- 
+  lm(HIV_prev ~ barrier + gdp + years_in_school, data = data) 
 # get the correlation table
 summary(lm_HIV_prev_all_features)$coeff
 # make a residual plot
