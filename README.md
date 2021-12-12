@@ -6,10 +6,10 @@ This Readme.md file contains a catelog of data sources and files on our github r
 
 # Catelogs
 ### Catelog of files in github repository
-* *Project overview, data read-in and wrangling* "Part1_data_cleaning.rmd"
-* *Exploratory analysis (univariate analysis) & Linear regression model* "Part2_exploratory_analysis_linear_regression.rmd"
-* *Machine learning models (decision tree & kNN)* "Part3_decision_tree_knn.rmd"
-* *Shiny Apps* "Part4_shiny.rmd"
+* "Part1_data_cleaning.rmd" *Project overview, data read-in and wrangling* 
+* "Part2_exploratory_analysis_linear_regression.rmd" *Exploratory analysis (univariate analysis) & Linear regression model* 
+* "Part3_decision_tree_knn.rmd" *Machine learning models (decision tree & kNN)* 
+* "Part4_shiny.rmd" *Shiny Apps* 
 
 
 ### Variables, Data sources, and Data descriptions
