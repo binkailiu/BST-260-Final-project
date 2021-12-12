@@ -1,4 +1,4 @@
-# BST 260 Final Project
+## BST 260 Final Project
 # What should we care about? Contraceptive Use and Health!
 ### Authors: Binkai (Cathy) Liu, Karla Flores Guzman, Xinhui (Kiera) Zhang, Yichi Zhang, Jiabao (Lily) Zhong
 #### December 12, 2021
@@ -7,14 +7,46 @@ This Readme.md file contains a catelog of data sources and files on our github r
 
 # Catelogs
 ### Catelog of files in github repository
-* `part1_data_cleaning.rmd` *Project overview, data read-in and wrangling* 
-* `part2_exploratory_analysis_linear_regression.rmd`, `part2_exploratory_shiny_contraceptive.R`, `part2_exploratory_shiny_birth_rate_univariate.R`, `part2_exploratory_shiny_infant_mortality_univariate.R`, and `part2_exploratory_shiny_HIV_prevalence_univariate.R` *Exploratory analysis (univariate analysis), Linear regression model, and Shiny apps* 
-* `part3_decision_tree_knn.rmd` *Machine learning models (decision tree & kNN)* 
+Project overview, data read-in and wrangling
+
+* RMD file: 
+  * `part1_data_cleaning.rmd` 
+* Dataset used:
+  * `rawdata_birth_rate.xlsx`
+  * `rawdata_infant_mortality.csv`
+  * `rawdata_HIV_prevalence.csv`
+  * `rawdata_contraceptives.xlsx`
+  * `rawdata_gdp.csv`
+  * `rawdata_edu_level.csv`
+  * `rawdata_mean_age_childbearing.xlsx`
+
+Exploratory analysis (univariate analysis), Linear regression model, and Shiny apps
+
+* RMD file: 
+  * `part2_exploratory_analysis_linear_regression.rmd`
+* Dataset used:
+  * `world_clean.csv`
+* Shiny apps: 
+   * `part2_exploratory_shiny_contraceptive.R`     
+   * `part2_exploratory_shiny_birth_rate_univariate.R`
+   * `part2_exploratory_shiny_infant_mortality_univariate.R`
+   * `part2_exploratory_shiny_HIV_prevalence_univariate.R` 
+* Dataset used:
+  * `shiny_clean.csv`
+
+Machine learning models (decision tree & kNN)
+
+* RMD file: 
+  * `part3_decision_tree_knn.rmd` 
+* Dataset used:
+  * `world_clean.csv`
 
 # Project overview
 ## Overview and Motivation
 In 2019, over 1 out of 1.9 billion Women of the Reproductive Age group (15-49 years old) worldwide need family planning, according to WHO; of these, around 800 million use contraceptive methods. Unfortunately, almost 300 million have an unmet need for contraception (WHO). Access to contraceptives is heterogeneous around the world. There could be many reasons for the variation in contraceptives use: taboos, lack of sexual education, armed conflicts, to name a few. Also, women’s acceptance could be diminished by religious opposition, fear of side effects, and poor quality of medical counseling and service.
+
 It is a human right to decide the number and spacing of their children; contraceptives play a crucial role in helping to achieve that right. Moreover, it is well documented that the use of condoms helps to reduce the risk of getting sexually transmitted diseases.
+
 Our team comprises five women interested in different aspects of human health using epidemiological approaches. Motivated by our identities as women scholars from different parts of the world, we were inspired to explore more about how contraceptive uses are associated with different health outcomes across countries, and to build predictive models to predict important outcomes at country level.  
 
 Reference: [WHO. Family planning/contraception methods](https://www.who.int/news-room/fact-sheets/detail/family-planning-contraception)
@@ -25,7 +57,9 @@ During the time when we were deciding topics to choose for our project, we broug
 ## Initial Questions
 Our study objectives are assessing associations between contraceptive use and our outcomes (birth rate, infant mortality rate, and HIV prevalence), respectively. We further built predictive models with important candidate predictors using linear regression, K-nearest neighbors (kNN), and decision tree models. We also present an interactive surface through Shiny App to display different contraceptives uses in different countries in the world, and to let our readers explore the associations between contraceptive use and health together with us.
 
-## Data (`part1_data_cleaning.rmd`)
+## Data Wrangling
+
+`part1_data_cleaning.rmd`
 
 A big strength of our project is rich data from different credible sources, including World Health Organization, other departments of the United Nations, and Gapminder. Each group member was responsible for at least some parts of data obtaining, cleaning, and compiling. In the following sections, we will be loading in dataset we used, and presenting data source, brief description of the dataset, and data wrangling we conducted on each dataset obtained.
 
@@ -69,17 +103,23 @@ Population Dynamics, World Population Prospects 2019, Mean Age of Childbearing.x
 * Data source: [Wikipedia: Abortion Law. Table. Legal grounds on which abortion is permitted in independent countries](https://en.wikipedia.org/wiki/Abortion_law)
 * Data description: This dataset was "web-scrapped" from Wikipedia (Contributer: Binkai (Cathy) Liu), which summarizes the legal grounds for abortion in all United Nations member states and United Nations General Assembly observer states and some countries with limited recognition (202 countries/regions). The data from Wikipedia is mostly based on data compiled by the United Nations up to 2019. We cleaned the dataset and further calculated `Abortion law score` for each country based on the numbers of times that abortion being prohibited in the 6 situations presented in the table, including "Risk to life, risk to health, rape, fetal impairment, economic or social, and on request". The `Abortion law score` ranges from 0-6, with 6 being the most strict on abortion law.
 
-## Exploratory Analysis (`part2_exploratory_analysis_linear_regression.rmd`)
+## Exploratory Analysis 
 
-* We first created a shiny app to visualize the availability and preference of contraceptives across different countries.
-* We then ran several univariate regressions on birth rate, infant mortality rate, and HIV prevalance to explore the relationship between each single candidate predictor and the three outcomes in preparation for linear regression. Visualization of the relationships were achieved using three more shiny apps.
+`part2_exploratory_analysis_linear_regression.rmd`
+
+* We first created a shiny app to visualize the availability and preference of contraceptives across different countries. (`part2_exploratory_shiny_contraceptive.R`)
+* We then ran several univariate regressions on birth rate, infant mortality rate, and HIV prevalance to explore the relationship between each single candidate predictor and the three outcomes in preparation for linear regression. Visualization of the relationships were achieved using three more shiny apps. (`part2_exploratory_shiny_birth_rate_univariate.R`, `part2_exploratory_shiny_infant_mortality_univariate.R`, and `part2_exploratory_shiny_HIV_prevalence_univariate.R`)
 
 ## Final Analysis
 
-### Linear Regression (`part2_exploratory_analysis_linear_regression.rmd`)
+### Linear Regression 
+
+`part2_exploratory_analysis_linear_regression.rmd`
 
 * We ran linear regression with the significant predictors identified from the univariate regressions.
 
-### Machine Learning (`part3_decision_tree_knn.rmd`)
+### Machine Learning 
+
+`part3_decision_tree_knn.rmd`
 
 * We split our dataset into training and testing sets, and used two machine learning approaches (i.e., decision tree and kNN regression) to predict the three ourcomes. To compare the two approaches, we considered mean square error (MSE) and Pearson correlation coefficient (r) as model performance metrics.
