@@ -4,7 +4,17 @@ output: html_document
 
 ## Exploratory Analysis (Univariate Analysis) and Linear Regression
 
-What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
+* Linear association with the outcome
+In order to understand if the variables we are using genuinely predict childbirth, child mortality rate and HIV prevalence,we looked at the linear association of each variable with the outcome and analyzed:
+  - The type and impact of the association (sign and size of the betas)
+  - The p-value in order to assure that the association is statistically significant 
+  - Plot of the residuals in order to guarantee that the errors do not reach a pattern (not error correlations or changes in variance) 
+
+* Correlation Matrix
+  * We analyzed that the variables we are using are not highly correlated to avoid multicollinearity or overfitting by dropping highly correlated variables.
+
+* Linear regression variable selection
+After an Exploratory Analysis of univariate linear association, we also ran a linear regression using all variables to analyze multiple interaction and, based on the p-value of the betas,  univariate analysis and correlation matrix, we selected the variables that showed a consistent linear association as a reference of key variables for other methods. 
 
 ### Load Packages & Read in the Cleaned Data Set
 
@@ -57,7 +67,7 @@ plot(lm_birth_rate_predicted_by_years_in_school$residuals,
 
 ##### Association of birth rate with wealth of the nation (gdp per capita)
 
-We also can appreciate a statistically significant negative association, which is bolstering our hypothesis that Women with a better income have access to better medical attention and family planning.But also, the effect is very small compared with education (-3.e-4 vs -2, v.gr. 10,000 smaller). Additionally, the residual errors do not show a pattern that might alert us of any bias.
+We also can appreciate a statistically significant negative association, which is bolstering our hypothesis that Women with a better income have access to better medical attention and family planning.But also, the effect is very small compared with education (-3.e-4 vs -2, i.e. 10,000 smaller). Additionally, the residual errors do not show a pattern that might alert us of any bias.
 
 ```{r br-gdp, fig.align="center"}
 # fit the model
