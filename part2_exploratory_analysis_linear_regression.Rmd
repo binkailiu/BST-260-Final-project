@@ -14,7 +14,7 @@ In order to understand if the variables we are using genuinely predict childbirt
   * We analyzed that the variables we are using are not highly correlated to avoid multicollinearity or overfitting by dropping highly correlated variables.
 
 * Linear regression variable selection
-After an Exploratory Analysis of univariate linear association, we also ran a linear regression using all variables to analyze multiple interaction and, based on the p-value of the betas,  univariate analysis and correlation matrix, we selected the variables that showed a consistent linear association as a reference of key variables for more complex methods. 
+After an Exploratory Analysis of univariate linear association, we also ran a linear regression using all variables to analyze multiple interaction and, based on the p-value of the betas,  univariate analysis and correlation matrix, we selected the variables that showed a consistent linear association as a reference of key variables for other methods. 
 
 ### Load Packages & Read in the Cleaned Data Set
 
