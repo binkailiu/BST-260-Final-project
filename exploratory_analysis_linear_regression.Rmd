@@ -501,7 +501,7 @@ lm_HIV_prev_predicted_by_regionL <- lm(HIV_prev ~ region_l , data = data_2)
 summary(lm_HIV_prev_predicted_by_regionL)$coeff
 # make a residual plot
 plot(lm_HIV_prev_predicted_by_regionL$residuals, 
-     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+     pch = 16, col = "cyan", xlab = "Observations", ylab = "Residuals")
 ```
 
 #### Using all features for the model *Red flag*
@@ -521,7 +521,7 @@ plot(lm_HIV_prev_all_features$residuals,
 
 `any_method` and `score` are not significant in the full model so we removed them.
 
-```{r hiv-remove anymethod and score, fig.align="center"}
+```{r hiv-remove anymethods and score, fig.align="center"}
 # fit the model
 lm_HIV_prev_all_features <- lm(HIV_prev ~ barrier + gdp + years_in_school, data = data) 
 # get the correlation table
