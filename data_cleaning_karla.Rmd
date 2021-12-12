@@ -1,0 +1,45 @@
+---
+title: "data_cleaning_karla"
+author: "KarlaFlores"
+date: "12/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(tidyverse) 
+library(readr)
+library(dplyr)
+
+###syphilis rate in preg women###
+syphi_raw <- read_csv("syphilis rate in preg women.csv")
+
+head(syphi_raw)
+
+syphi <- syphi_raw %>% filter(IsLatestYear=="TRUE") %>% select(`Location`,`Period`, `FactValueNumeric`)
+
+#table(syphi$Period)
+#Solomon islands 2017 data might be typo in the original dataset, so we manually input their 2015 data 
+
+syphi$Period[which(syphi$Location=="Solomon Islands")] <- 2015
+syphi$FactValueNumeric[which(syphi$Location=="Solomon Islands")] <- 13.2
+
+
+###infant mortality rate###
+infant_raw <- read_csv("infant mortality rate.csv")
+
+head(infant_raw)
+infant <- infant_raw %>% filter(IsLatestYear=="TRUE", Dim1 == "Both sexes") %>% select(`Location`,`Period`, `FactValueNumeric`)
+
+
+```
+

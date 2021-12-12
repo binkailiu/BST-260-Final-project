@@ -1,0 +1,223 @@
+---
+title: "gapminder_ML_yichi"
+author: "Yichi Zhang"
+date: "12/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(tidyverse) 
+library(readr)
+library(dplyr)
+
+###GDP per capita in US dollar inflation adjusted###
+gdp_raw <- read_csv("gdppercapita_us_inflation_adjusted.csv")
+#head(gdp_raw)
+gdp_long <- gdp_raw %>%
+  gather( year,gdp, `1959`:`2019`) %>%
+  drop_na()
+gdp_latest <- gdp_long %>% group_by(country) %>% slice_tail()
+#convert "k" into thousand
+gdp_latest <- gdp_latest %>%
+  mutate(gdp = case_when(
+    str_detect(gdp, "k") ~ as.numeric(str_extract(gdp, "[\\d\\.]+")) * 1000,
+    TRUE ~ as.numeric(gdp)
+  ))
+#change year column name
+colnames(gdp_latest)[2]<-"gdp_latest_year"
+
+# ###RETIRED Education level(literacy rate)###
+# edu_raw <-read_csv("literacy_rate_adult_total_percent_of_people_ages_15_and_above.csv")
+# edu_long <- edu_raw %>%
+#   gather( year, literacy, `1974`:`2010`) %>%
+#   drop_na()
+# edu_latest <- edu_long %>% group_by(country) %>% slice_tail()
+# #change year column name
+# colnames(edu_latest)[2]<-"edu_latest_year"
+
+###Education level(mean years in school women 15-44)###
+edu_raw <-read_csv("mean_years_in_school_women_of_reproductive_age_15_to_44.csv")
+edu_long <- edu_raw %>%
+  gather( year, years_in_school, `1969`:`2008`) %>%
+  drop_na()
+edu_latest <- edu_long %>% group_by(country) %>% slice_tail()
+#change year column name
+colnames(edu_latest)[2]<-"edu_latest_year"
+
+
+
+###Newly infected HIV percent###
+HIV_new_raw<- read_csv("newly_hiv_infected_percent_age_15_49.csv")
+HIV_new_long <- HIV_new_raw %>%
+  gather( year, HIV_new, `1989`:`2010`) %>%
+  drop_na()
+HIV_new_latest <- HIV_new_long %>% group_by(country) %>% slice_tail()
+HIV_new_latest %>%
+  filter(as.numeric(year) > 1999)
+#no country has most recent data before 2000
+#convert percentages into numeric values
+HIV_new_latest <- HIV_new_latest %>%
+  mutate(HIV_new = as.numeric(HIV_new)/100)
+#change year column name
+colnames(HIV_new_latest)[2]<-"HIV_new_latest_year"
+
+
+
+###HIV prevalence### 
+HIV_prev_raw<- read_csv("adults_with_hiv_percent_age_15_49 (1).csv")
+HIV_prev_long <- HIV_prev_raw %>%
+  gather( year, HIV_prev, `1978`:`2010`) %>%
+  drop_na()
+HIV_prev_latest <- HIV_prev_long %>% group_by(country) %>% slice_tail()
+HIV_prev_latest %>%
+  filter(as.numeric(year) > 1999)
+#no country has most recent data before 2000
+#convert percentages into numeric values
+HIV_prev_latest <- HIV_prev_latest %>%
+  mutate(HIV_prev = as.numeric(HIV_prev)/100)
+#change year column name
+colnames(HIV_prev_latest)[2]<-"HIV_prev_latest_year"
+
+
+
+
+
+###Join 4 gapminder data
+gapminder_predictors <- full_join(gdp_latest, edu_latest)
+gapminder_outcomes <-full_join(HIV_new_latest, HIV_prev_latest) 
+gapminder_full <- full_join(gapminder_predictors,gapminder_outcomes)
+
+
+
+```
+
+
+
+```{r}
+###combing UN datasets
+CM_new$country_area <- str_replace_all(CM_new$country_area, "Democratic People's Republic of Korea", "Dem. People's Republic of Korea")
+BR$country_area <- str_replace_all(BR$country_area, "Czechia", "Czech Republic")
+MAC$country_area <- str_replace_all(MAC$country_area, "Czechia", "Czech Republic")
+UNdata_BR_CM_MAC<-full_join(BR,CM_new)%>%
+  full_join(.,MAC)
+
+###combing WHO datasets
+colnames(infant)[3]<-"infant_mortality"
+colnames(syphi)[3]<-"syphilis_rate"
+WHOdata_infant_syphi <-left_join(infant,syphi, by="Location")
+
+
+colnames(UNdata_BR_CM_MAC)[1]<-"country"
+colnames(WHOdata_infant_syphi)[1]<-"country"
+
+############
+###Recode country names based on abortion law table for gapminder
+
+setdiff(score$country,gapminder_full$country)
+setdiff(UNdata_BR_CM_MAC$country,gapminder_full$country)
+
+country_key_gap = c("Congo, Rep."="Congo",
+                "Congo, Dem. Rep."="Democratic Republic of the Congo", 
+                "Timor-Leste"="East Timor",
+                "Cote d'Ivoire"="Ivory Coast",
+                "Kyrgyz Republic"="Kyrgyzstan",
+                "Lao"="Laos",
+                "Micronesia, Fed. Sts."="Micronesia",
+                "St. Kitts and Nevis"="Saint Kitts and Nevis",
+                "St. Lucia"="Saint Lucia",
+                "St. Vincent and the Grenadines"="Saint Vincent and the Grenadines",
+                "Sao Tome and Principe"="São Tomé and Príncipe",
+                "Slovak Republic"="Slovakia",
+                "American Samoa"="Samoa",
+                "Hong Kong, China"="China, Hong Kong SAR",
+                "Macao, China"="China, Macao SAR",
+                "Virgin Islands (U.S.)"="United States Virgin Islands"
+                
+                )
+                               
+gapminder_full <- gapminder_full %>%   mutate(country = recode_factor(country, !!!country_key_gap))
+
+
+
+###Recode country names based on abortion law table for UN datasets
+
+setdiff(score$country,UNdata_BR_CM_MAC$country_area)
+
+country_key_UN = c("Bolivia (Plurinational State of)"="Bolivia",
+                "Brunei Darussalam"="Brunei", 
+                "Cabo Verde"="Cape Verde",
+                "Timor-Leste"="East Timor",
+                "Iran (Islamic Republic of)"="Iran",
+                "Côte d'Ivoire"="Ivory Coast",
+                "Lao People's Democratic Republic"="Laos",
+                "Micronesia (Fed. States of)"="Micronesia",
+                "Republic of Moldova"="Moldova",
+                "Dem. People's Republic of Korea"="North Korea",
+                "State of Palestine"="Palestine",
+                "Russian Federation"="Russia",
+                "Sao Tome and Principe"="São Tomé and Príncipe",
+                "Republic of Korea"="South Korea",
+                "Syrian Arab Republic"="Syria",
+                "China, Taiwan Province of China"="Taiwan",
+                "United Republic of Tanzania"="Tanzania",
+                "United States of America"="United States",
+                "Venezuela (Bolivarian Republic of)"="Venezuela",
+                "Viet Nam"="Vietnam")
+                               
+UNdata_BR_CM_MAC <- UNdata_BR_CM_MAC %>%   mutate(country = recode_factor(country, !!!country_key_UN))
+
+
+###Recode country names based on abortion law table for WHO datasets
+setdiff(score$country,WHOdata_infant_syphi$country)
+setdiff(gapminder_full$country,WHOdata_infant_syphi$country)
+setdiff(UNdata_BR_CM_MAC$country,WHOdata_infant_syphi$country)
+
+country_key_WHO = c("Bolivia (Plurinational State of)"="Bolivia",
+                "Brunei Darussalam"="Brunei", 
+                "Cabo Verde"="Cape Verde",
+                "Czechia"="Czech Republic",
+                "Timor-Leste"="East Timor",
+                "Iran (Islamic Republic of)"="Iran",
+                "Côte d'Ivoire"="Ivory Coast",
+                "Lao People's Democratic Republic"="Laos",
+                "Micronesia (Federated States of)"="Micronesia",
+                "Republic of Moldova"="Moldova",
+                "Democratic People's Republic of Korea"="North Korea",
+                "The former Yugoslav Republic of Macedonia"="North Macedonia",
+                "Russian Federation"="Russia",
+                "Sao Tome and Principe"="São Tomé and Príncipe",
+                "Republic of Korea"="South Korea",
+                "Syrian Arab Republic"="Syria",
+                "United Republic of Tanzania"="Tanzania",
+                "United Kingdom of Great Britain and Northern Ireland"="United Kingdom",
+                "United States of America"="United States",
+                "Venezuela (Bolivarian Republic of)"="Venezuela",
+                "Viet Nam"="Vietnam")
+
+WHOdata_infant_syphi <- WHOdata_infant_syphi %>%   mutate(country = recode_factor(country, !!!country_key_WHO))
+
+
+###Combine all datasets
+Score_GAP_UN_WHO<-full_join(score, gapminder_full) %>%
+  full_join(.,UNdata_BR_CM_MAC) %>%
+  full_join(.,WHOdata_infant_syphi)
+world_clean <- Score_GAP_UN_WHO %>% 
+  select(-gdp_latest_year,-edu_latest_year,-HIV_new_latest_year,-HIV_prev_latest_year,-Period.x,-Period.y)
+
+
+###CSV for checking
+write.csv(world_clean,"world_clean.csv", row.names = FALSE)
+
+
+```
+
