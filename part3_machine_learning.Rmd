@@ -250,11 +250,11 @@ pearson.HIV.test.knn <-
 
 ### Model Performance
 
-*Birth rate: To compare models, mean square error (MSE) and Pearson coefficients (R) were considered as our model performance metrics. The decision tree had a test MSE higher than that of training, while knn model had a test MSE lower than that of training. Decision tree model resulted in a lower test R, comparing to knn.
+* Birth rate: To compare models, mean square error (MSE) and Pearson coefficients (R) were considered as our model performance metrics. The decision tree had a test MSE higher than that of training, while knn model had a test MSE lower than that of training. Decision tree model resulted in a lower test R, comparing to knn.
 
-*Infant mortality: To compare models, mean square error (MSE) and Pearson coefficients (R) were considered as our model performance metrics. The decision tree had a test MSE higher than that of training, while knn model had a test MSE lower than that of training. The decision tree model resulted in a very small test R, comparing to knn.Knn model performed better than decision tree overall.
+* Infant mortality: To compare models, mean square error (MSE) and Pearson coefficients (R) were considered as our model performance metrics. The decision tree had a test MSE higher than that of training, while knn model had a test MSE lower than that of training. The decision tree model resulted in a very small test R, comparing to knn.Knn model performed better than decision tree overall.
 
-*HIV prevalence: regarding this outcome, both models got low results. This is confirmed by results found on the exploratory analysis for HIV prevalence shows that there is no robust linear association with almost none variable.  I could be due these variables are not good to predict this data.
+* HIV prevalence: regarding this outcome, both models got low results. This is confirmed by results found on the exploratory analysis for HIV prevalence shows that there is no robust linear association with almost none variable.  I could be due these variables are not good to predict this data.
 
 ```{r model performance}
 # create a data frame to store model performance metrics

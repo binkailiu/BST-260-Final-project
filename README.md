@@ -67,11 +67,8 @@ During the time when we were deciding topics to choose for our project, we broug
 Our study objectives are assessing associations between contraceptive use and our outcomes (birth rate, infant mortality rate, and HIV prevalence), respectively. We further built predictive models with important candidate predictors using linear regression, K-nearest neighbors (kNN), and decision tree models. We also present an interactive surface through Shiny App to display different contraceptives uses in different countries in the world, and to let our readers explore the associations between contraceptive use and health together with us.
 
 ## Data
+
 A big strength of our project is rich data from different credible sources, including World Health Organization, other departments of the United Nations, and Gapminder. Each group member was responsible for at least some parts of data obtaining, cleaning, and compiling. In the following sections, we will be loading in dataset we used, and presenting data source, brief description of the dataset, and data wrangling we conducted on each dataset obtained.
-
-
-
-
 
 ## Exploratory Analysis
 
@@ -82,6 +79,4 @@ A big strength of our project is rich data from different credible sources, incl
 * For the third model, we wanted to predict the HIV prevalence in a country using Years in school, Gross domestic product, Use of a contraceptive method, Use of a barrier method, Region, and score based on abortion legality. We performed univariate linear association with the outcome to see how our variables correlate with HIV prevalence. We fitted a linear regression model that predicts HIV prevalence using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
 
 ## Final Analysis
-
-
 
