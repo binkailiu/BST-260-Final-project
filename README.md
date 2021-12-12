@@ -75,7 +75,11 @@ A big strength of our project is rich data from different credible sources, incl
 
 ## Exploratory Analysis
 
+* For the first model, we wanted to predict the birth rate in a country using Years in school, Gross domestic product, Use of a contraceptive method, Mean age of childbearing, Region, and score based on abortion legality. We performed univariate linear association with the outcome and created a correlation matrix to see how our variables correlate with birth rate and between themselves. We fitted a linear regression model that predicts birth rate using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
 
+* For the second model, we wanted to predict infant mortality rate in a country using Years in school, Gross domestic product, Use of a contraceptive method, Mean age of childbearing, Region, and score based on abortion legality. We performed univariate linear association with the outcome to see how our variables correlate with infant mortality rate. We fitted a linear regression model that predicts infant mortality rate using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
+
+* For the third model, we wanted to predict the HIV prevalence in a country using Years in school, Gross domestic product, Use of a contraceptive method, Use of a barrier method, Region, and score based on abortion legality. We performed univariate linear association with the outcome to see how our variables correlate with HIV prevalence. We fitted a linear regression model that predicts HIV prevalence using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
 
 ## Final Analysis
 
