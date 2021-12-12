@@ -1,8 +1,10 @@
 ---
-title: "Models"
-date: "12/8/2021"
 output: html_document
 ---
+
+## Machine Learning: Decision Tree and KNN Regression
+
+What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 
 ### Load packages & Read in the cleaned data set
 ```{r load packages, message=F, warning = F}
@@ -15,12 +17,6 @@ world_clean <- read_csv("world_clean.csv")
 df.machineL <- world_clean %>% drop_na() # 137 countries
 rm(world_clean)
 ```
-
-### Linear Regression for All Three Outcomes
-
-TBC
-
-
 
 ### Decision Trees for Birth Rate and Infant Mortality Rate
 
