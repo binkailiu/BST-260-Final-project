@@ -1,0 +1,547 @@
+---
+output: html_document
+---
+
+## Exploratory Analysis: Univariate Analysis and Linear Regression
+
+What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
+
+### Load Packages & Read in the Cleaned Data Set
+
+```{r load packages, message=F, warning = F}
+library(tidyverse) 
+data <- read.csv("world_clean.csv")
+```
+
+### First Model: Prediction of Birth Rate (`crude_birth_rate_perK`)
+
+We are trying to predict the birth rate in a country using socioeconomic features and controlling by region. Main variables we are using are:
+
+* Years in school (`years_in_school`) 
+  * Level of education is a proxy to understand if women were able to receive sexual education.
+* Gross domestic product (`gdp`)
+  * The income of a region can help us to predict if the population has good medical coverage and access to information of family planning.
+* Use of a contraceptive method (`any_method`)
+  * Contraceptive methods hinder unplanned childbirth.
+* Mean age of childbearing (`mean_age_of_childbearing`)
+  * The sooner a woman starts having children will increase the expected children that can have. (Also, it is important to keep in mind that this variable can have an endogenous bias.)
+* Region (`region_l`)
+  * Childbirth might change by region regardless of other socioeconomic variables.
+* Score (`score`)
+  * We have an estimated score based on abortion legality.
+
+#### Preliminary Analyses
+
+We are going to perform two types of analyses:
+
+* Linear association with the outcome
+  * We will measure the association of each variable by itself with the outcome we want to predict and also analyze the residual.
+* Correlation Matrix
+  * We want to see how our variables correlate between themselves.
+
+
+##### Association of birth rate with years of school
+
+We can appreciate a statistically significant negative association, which is bolstering our hypothesis. Also, the residual errors do not show a pattern that might alert us of any bias.
+
+```{r br-edu, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_years_in_school <- 
+  lm(crude_birth_rate_perK ~  years_in_school , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_years_in_school)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_years_in_school$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of birth rate with wealth of the nation (gdp per capita)
+
+We also can appreciate a statistically significant negative association, which is bolstering our hypothesis that Women with a better income have access to better medical attention and family planning.But also, the effect is very small compared with education (-3.e-4 vs -2, v.gr. 10,000 smaller). Additionally, the residual errors do not show a pattern that might alert us of any bias.
+
+```{r br-gdp, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_gdp <- 
+  lm(crude_birth_rate_perK ~  gdp , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_gdp)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_gdp$residuals, 
+     pch = 16, col = "violet", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of birth rate with the use of contraceptive methods
+
+We also can appreciate a statistically significant negative association and see that the effect is higher than gdp but lower than education and could be related with the fact that the use of a contraceptive method does not guarantee unplanned children if it is not used in a right way but a higher level of education will imply an effective use (let's see how those 2 variables correlate in the correlation matrix). Also, the residual errors do not show a pattern that might alert us of any bias.
+
+```{r br-anymethods, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_any_method <- 
+  lm(crude_birth_rate_perK ~  any_method , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_any_method)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_any_method$residuals, 
+     pch = 16, col = "green", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of birth rate with mean age of childbearing
+
+We see a negative association, which makes sense as the older a woman start having children, it is less probable that she will have many kids, but the association is not as robust as the previous variables. Also, the residuals seem to be loaded to low values (it is not uniform as it should be). Let's use this variable with precautions because it can have endogenity.
+
+```{r br-mac, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_mean_age_of_childbearing <-
+  lm(crude_birth_rate_perK ~  mean_age_of_childbearing , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_mean_age_of_childbearing)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_mean_age_of_childbearing$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of birth rate with abortion legality score
+
+The abortion legality score is statistically positive. Notwithstanding, the residuals do not look uniform so we should use this variable with caution.
+
+```{r br-score, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_score <- lm(crude_birth_rate_perK ~  score , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_score)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_score$residuals, 
+     pch = 16, col = "brown", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of birth rate with region
+
+Regions have different effects on child birth, but for some cases the effect is not statistically significant.
+
+```{r br-region, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_regionL <- lm(crude_birth_rate_perK ~  region_l , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_regionL)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_regionL$residuals, 
+     pch = 16, col = "cyan", xlab = "Observations", ylab = "Residuals")
+```
+
+Because of this, it is sensible to use dummy coded variables for those regions where the effect is robust such as Sub-Saharan Africa, Central and Southern Asia, and Other Oceania.
+
+```{r br-region-dummy, fig.align="center"}
+# fit the model
+lm_birth_rate_predicted_by_regionL <- 
+  lm(crude_birth_rate_perK ~  r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia , data = data) 
+# get the coefficient table
+summary(lm_birth_rate_predicted_by_regionL)$coeff
+# make a residual plot
+plot(lm_birth_rate_predicted_by_regionL$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Matrix correlation
+
+```{r matrix correlation}
+# select the variable we need
+linear_model_variables <- data %>% 
+  select(mean_age_of_childbearing, any_method, gdp, years_in_school, score)
+# write a function to deal with NAs
+NA2mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
+# apply the function to the data frame
+replaced_nulls <- replace(linear_model_variables, TRUE, 
+                          lapply(linear_model_variables, NA2mean))
+# get the correlation matrix
+cor(replaced_nulls)
+```
+
+After estimating the correlation matrix of all numeric variables (we are excluding the regions), the variable any_method is highly correlated with years of education, gdp and score, but let's see how the features interact in the model.
+
+#### Using All Features for the Model
+
+```{r br-all, fig.align="center"}
+# fit the model
+lm_birth_rate_all_features <- 
+  lm(crude_birth_rate_perK ~ r_Subsaharan_Africa+ r_OtherOceania  + r_CS.Asia +
+       mean_age_of_childbearing + any_method + gdp + years_in_school + score, 
+     data = data) 
+# get the coefficient table
+summary(lm_birth_rate_all_features)$coeff
+# make a residual plot
+plot(lm_birth_rate_all_features$residuals, pch = 16, col = "pink",
+     xlab = "Observations", ylab = "Residuals")
+```
+
+`gdp` and `mean_age_of_childbearing` are not statistically significant. Let's remove them.
+
+```{rr br-sig, fig.align="center"}
+# fit the model
+lm_birth_rate_all_features <- 
+  lm(crude_birth_rate_perK ~   r_Subsaharan_Africa+ r_OtherOceania  + r_CS.Asia+ any_method+years_in_school+score, data = data) 
+# get the coefficient table
+summary(lm_birth_rate_all_features)$coeff
+# plot the residuals
+plot(lm_birth_rate_all_features$residuals, pch = 16, col = "purple",
+     xlab = "Observations", ylab = "Residuals")
+```
+
+After dropping `gdp` and `mean_age_of_childbearing`, we have all features as statically significant.
+
+
+### Second Model: Prediction of Infant Mortality rate (`infant_mortality`)
+
+We are trying to predict the infant mortality rate in a country using socioeconomic features and controlling by region. Main variables we are using are:
+
+* Years in school (`years_in_school`) 
+  * Level of education might indicate better knowledge of how a parents have to take care of children.
+* Gross domestic product (`gdp`)
+  * The income of a region can help us to predict if the population has good medical coverage.
+* Use of a contraceptive method (`any_method`)
+  * Contraceptive methods enhance family planning and better attention to children.
+* Mean age of childbearing (`mean_age_of_childbearing`)
+  * The sooner a woman starts having children the least is prepared to be a sensible mother.
+* Region (`region_l`)
+  * Region can consider other socioeconomic variables not reflected on previous ones.
+* Score (`score`)
+  * We have an estimated score based on abortion legality which is correlated with unplanned parenthood.
+
+#### Preliminary Analyses
+
+We are going to perform two types of analyses:
+
+* Linear association with the outcome
+  * We will measure the association of each variable by itself with the outcome we want to predict and also analyze the residual.
+* Correlation Matrix
+  * We already did this analysis for child birth.
+
+
+##### Association of infant mortality rate with years of school
+
+The results are robust sustaining the hypothesis that more years of school strongly hinder child mortality and we do not see patterns on the residuals.
+
+```{r im-edu, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_years_in_school <- 
+  lm(infant_mortality ~  years_in_school , data = data) 
+# get the coefficient table
+summary(lm_infant_mortality_predicted_by_years_in_school)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_years_in_school$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+
+##### Association of infant mortality rate with wealth of the nation (gdp per capita)
+
+The results are also robust sustaining the hypothesis that a better income hinders child mortality but the effect is very low (-4e-4) and we do not see patterns on the residuals.
+
+```{r im-gdp, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_gdp <- 
+  lm(infant_mortality ~  gdp , data = data) 
+# get the coefficient table
+summary(lm_infant_mortality_predicted_by_gdp)$coeff 
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_gdp$residuals, 
+     pch = 16, col = "violet", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of infant mortality rate with the use of contraceptive methods
+
+The results are also robust sustaining the hypothesis that using contraceptive methods hinders child mortality because parents will have planned children and we do not see patterns on the residuals.
+
+```{r im-anymethods, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_any_method <- 
+  lm(infant_mortality ~  any_method , data = data) 
+# get the correlation table
+summary(lm_infant_mortality_predicted_by_any_method)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_any_method$residuals, 
+     pch = 16, col = "green", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of infant mortality rate with mean age of childbearing
+
+We see a negative effect but it is not statistically significant. Also, residuals are negatively loaded (we should not blindly trust on using it).
+
+```{r im-mac, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_mean_age_of_childbearing <- 
+  lm(infant_mortality ~  mean_age_of_childbearing , data = data) 
+# get the correlation table
+summary(lm_infant_mortality_predicted_by_mean_age_of_childbearing)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_mean_age_of_childbearing$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of infant mortality rate with abortion legality score
+
+The abortion legality score is statistically positive.
+
+```{r im-score, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_score <- 
+  lm(infant_mortality ~  score , data = data) 
+# get the correlation table
+summary(lm_infant_mortality_predicted_by_score)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_score$residuals, 
+     pch = 16, col = "cyan", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of infant mortality rate with region
+
+Regions have different effects on child mortality, but for some cases the effect is not statistically significant. 
+
+```{r im-region, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_regionL <- 
+  lm(infant_mortality ~  region_l , data = data) 
+# get the correlation table
+summary(lm_infant_mortality_predicted_by_regionL)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_regionL$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+Because of this, it is sensible to use a dummy for those regions where the effect is robust such as: Sub-Saharan Africa, Central and Southern Asia, and Other Oceania (the same ones we chose for child birth rate but only Sub-Saharan Africa is strongly robust).
+
+```{r im-region-dummy, fig.align="center"}
+# fit the model
+lm_infant_mortality_predicted_by_regionL <- 
+  lm(infant_mortality ~  r_Subsaharan_Africa+ r_OtherOceania  + r_CS.Asia , 
+     data = data) 
+# get the correlation table
+summary(lm_infant_mortality_predicted_by_regionL)$coeff
+# make a residual plot
+plot(lm_infant_mortality_predicted_by_regionL$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+#### Using all features for the model
+
+```{r im-all, fig.align="center"}
+# fit the model
+lm_infant_mortality_all_features <- 
+  lm(infant_mortality ~ r_Subsaharan_Africa + r_OtherOceania + r_CS.Asia +
+       mean_age_of_childbearing + any_method + gdp + years_in_school + score, 
+     data = data) 
+# get the correlation table
+summary(lm_infant_mortality_all_features)$coeff
+# make a residual plot
+plot(lm_infant_mortality_all_features$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+`gdp` is not statistically significant. Let's remove it first before removing the other ones that also are not significant.
+
+```{r im-remove gdp, fig.align="center"}
+# fit the model
+lm_infant_mortality_selected_features_1 <- 
+  lm(infant_mortality ~ r_Subsaharan_Africa + r_OtherOceania  + r_CS.Asia +
+       mean_age_of_childbearing + any_method + years_in_school + score, 
+     data = data) 
+# get the correlation table
+summary(lm_infant_mortality_selected_features_1)$coeff
+# make a residual plot
+plot(lm_infant_mortality_selected_features_1$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+After dropping `gdp`, dummy regions of Oceania and Central & South Asia are not statistically significant. Let's drop them.
+
+```{r im-remove ocenania and cs asia, fig.align="center"}
+# fit the model
+lm_infant_mortality_selected_features_2 <- 
+  lm(infant_mortality ~ r_Subsaharan_Africa +  mean_age_of_childbearing + 
+       any_method + years_in_school + score, data = data) 
+# get the correlation table
+summary(lm_infant_mortality_selected_features_2)$coeff
+# make a residual plot
+plot(lm_infant_mortality_selected_features_2$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+After dropping Oceania and Central & South Asia, abortion legality score remains as non-relevant. Let's remove it from the last model.
+
+```{r im-remove score, fig.align="center"}
+# fit the model
+lm_infant_mortality_selected_features_3 <- 
+  lm(infant_mortality ~ r_Subsaharan_Africa + mean_age_of_childbearing + 
+       any_method + years_in_school, data = data) 
+# get the correlation table
+summary(lm_infant_mortality_selected_features_3)$coeff
+# make a residual plot
+plot(lm_infant_mortality_selected_features_3$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+After dropping abortion law score, years in school, mean age of childbearing and use of contraceptive methods reduce infant mortality and being in a country from Sub-Saharan Africa increases it drastically.
+
+
+### Third Model: Prediction of HIV prevalence
+
+We are trying to predict the HIV prevalence in a country using socioeconomic features and controlling by region. Main variables we are using are:
+
+* Years in school (`years_in_school`) 
+  * Level of education might indicate better knowledge of how how to prevent STDs (including HIV).
+* Gross domestic product (`gdp`)
+  * The income of a region can help us to predict has access to condoms and information.
+* Use of a contraceptive method (`any_method`)
+  * Contraceptive methods imply better sexual health practices.
+* Barrier (`barrier`)
+  * Barrier method has a high risk reduction of contracting HIV. 
+* Region (`region_l`)
+  * Region can consider other socioeconomic variables not reflected on previous ones.
+* Score (`score`)
+  * We have an estimated score based on abortion legality which is correlated with unplanned parenthood.
+
+#### Preliminary Analyses
+
+We are going to perform two types of analyses:
+
+* Linear association with the outcome
+  * We will measure the association of each variable by itself with the outcome we want to predict and also analyze the residual.
+* Correlation Matrix
+  * Let's see how variables correlate by themselves.
+
+Note: As HIV prevalence is not reported by all countries, let's see how many countries have a null value
+
+```{r check NAs in hiv prev}
+sum(is.na(data$HIV_prev))
+```
+
+77 Countries did not report HIV prevalence. Given this, let's use only countries reporting it and be aware that reporting might play as a bias.
+
+```{r remove NAs in hiv prev}
+data_2 <- data %>% filter(HIV_prev > -1) 
+```
+
+##### Association of outcome with years of School
+
+Years in School does not seem to impact HIV prevalence by itself. Also, residuals are highly loaded to a negative value (let's be aware of using it to predict HIV prevalence).
+
+```{r hiv-edu, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_years_in_school <- 
+  lm(HIV_prev ~ years_in_school, data = data) 
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_years_in_school)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_years_in_school$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of outcome with wealth of the nation (gdp per capita)
+
+GDP shows a negative impact but the impact is not robust. Also, we see that residuals are far from being uniform.
+
+```{r hiv-gdp, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_gdp <- lm(HIV_prev ~ gdp , data = data_2) 
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_gdp)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_gdp$residuals, 
+     pch = 16, col = "violet", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of outcome with the use of contraceptive methods
+
+Any method not seem to impact HIV prevalence by itself. Also, residuals are highly loaded to a negative value. It seems that the HIV prevalence might have an error.
+
+```{r hiv-anymethods, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_any_method <- lm(HIV_prev ~ any_method , data = data_2)
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_any_method)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_any_method$residuals, 
+     pch = 16, col = "green", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of outcome with barrier
+
+Residuals remain as not uniform and the effect is not robust.
+
+```{r hiv-barrier, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_barrier <- lm(HIV_prev ~ barrier , data = data_2) 
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_barrier)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_barrier$residuals, 
+     pch = 16, col = "red", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of outcome with abortion legality score
+
+Residuals remain as not uniform and the effect is not robust.
+
+```{r hiv-score, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_score <- lm(HIV_prev ~ score, data = data_2) 
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_score)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_score$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+##### Association of outcome with region
+
+Not a single region explains HIV prevalence.
+
+```{r hiv-region, fig.align="center"}
+# fit the model
+lm_HIV_prev_predicted_by_regionL <- lm(HIV_prev ~ region_l , data = data_2) 
+# get the correlation table
+summary(lm_HIV_prev_predicted_by_regionL)$coeff
+# make a residual plot
+plot(lm_HIV_prev_predicted_by_regionL$residuals, 
+     pch = 16, col = "cyan", xlab = "Observations", ylab = "Residuals")
+```
+
+#### Using all features for the model *Red flag*
+
+We startred from the full model:
+
+```{r hiv-all, fig.align="center"}
+# fit the model
+lm_HIV_prev_all_features <- lm(HIV_prev ~ barrier + any_method + gdp +
+                                 years_in_school + score, data = data) 
+# get the correlation table
+summary(lm_HIV_prev_all_features)$coeff
+# make a residual plot
+plot(lm_HIV_prev_all_features$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+`any_method` and `score` are not significant in the full model so we removed them.
+
+```{r hiv-remove anymethods and score, fig.align="center"}
+# fit the model
+lm_HIV_prev_all_features <- lm(HIV_prev ~ barrier + gdp + years_in_school, data = data) 
+# get the correlation table
+summary(lm_HIV_prev_all_features)$coeff
+# make a residual plot
+plot(lm_HIV_prev_all_features$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+`yeaers_in_school` is not significant so we removed it.
+
+```{r hiv-remove edu, fig.align="center"}
+# fit the model
+lm_HIV_prev_all_features <- lm(HIV_prev ~ barrier + gdp, data = data) 
+# get the correlation table
+summary(lm_HIV_prev_all_features)$coeff
+# make a residual plot
+plot(lm_HIV_prev_all_features$residuals, 
+     pch = 16, col = "purple", xlab = "Observations", ylab = "Residuals")
+```
+
+Not a single variable explains HIV prevalence which is counter-intuitive and is a strong signal that the data might be wrong.
