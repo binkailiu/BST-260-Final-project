@@ -5,9 +5,9 @@
 
 This Readme.md file contains a catelog of data sources and files on our github repository. It also includes a brief overview of our study backgrounds, objectives, and methods. Note that all original datasets used for our analysis are accessible through both our github repository and website links in later sections. 
 
-# Catelogs
-### Catelog of files in github repository
-Project overview, data read-in and wrangling
+# Catelog of files in github repository
+
+#### Project overview, data read-in and wrangling
 
 * RMD file: 
   * `part1_data_cleaning.rmd` 
@@ -20,7 +20,7 @@ Project overview, data read-in and wrangling
   * `rawdata_edu_level.csv`
   * `rawdata_mean_age_childbearing.xlsx`
 
-Exploratory analysis (univariate analysis), Linear regression model, and Shiny apps
+#### Exploratory analysis (univariate analysis), Linear regression model, and Shiny apps
 
 * RMD file: 
   * `part2_exploratory_analysis_linear_regression.rmd`
@@ -34,7 +34,7 @@ Exploratory analysis (univariate analysis), Linear regression model, and Shiny a
 * Dataset used:
   * `shiny_clean.csv`
 
-Machine learning models (decision tree & kNN)
+#### Machine learning models (decision tree & kNN)
 
 * RMD file: 
   * `part3_decision_tree_knn.rmd` 
