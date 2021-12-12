@@ -37,13 +37,10 @@ library(readxl)
 
 #### Predictor: GDP
 
-<<<<<<< HEAD
+
 * Data source: Gapminder
 * Data description: GDP per capita(divided by midyear population), calculated in constant 2010 US dollars
-=======
-* Data source:[Data source]()
-* Data description:
->>>>>>> 3298aa87674ede7d0116986c058bf94fb13f0241
+
 
 ```{r predictor GDP, warning=FALSE, message=FALSE}
 # read in the data set
