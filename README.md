@@ -72,11 +72,15 @@ A big strength of our project is rich data from different credible sources, incl
 
 ## Exploratory Analysis
 
-* For the first model, we wanted to predict the birth rate in a country using Years in school, Gross domestic product, Use of a contraceptive method, Mean age of childbearing, Region, and score based on abortion legality. We performed univariate linear association with the outcome and created a correlation matrix to see how our variables correlate with birth rate and between themselves. We fitted a linear regression model that predicts birth rate using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
-
-* For the second model, we wanted to predict infant mortality rate in a country using Years in school, Gross domestic product, Use of a contraceptive method, Mean age of childbearing, Region, and score based on abortion legality. We performed univariate linear association with the outcome to see how our variables correlate with infant mortality rate. We fitted a linear regression model that predicts infant mortality rate using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
-
-* For the third model, we wanted to predict the HIV prevalence in a country using Years in school, Gross domestic product, Use of a contraceptive method, Use of a barrier method, Region, and score based on abortion legality. We performed univariate linear association with the outcome to see how our variables correlate with HIV prevalence. We fitted a linear regression model that predicts HIV prevalence using predictors with significant coefficients at a 0.05 threshold. Residual plots were used to examine the performance of the final model.
+* We first created a shiny app to visualize the availability and preference of contraceptives across different countries.
+* We then ran several univariate regressions on birth rate, infant mortality rate, and HIV prevalance to explore the relationship between each single candidate predictor and the three outcomes in preparation for linear regression. Visualization of the relationships were achieved using three more shiny apps.
 
 ## Final Analysis
 
+### Linear Regression
+
+* We ran linear regression with the significant predictors identified from the univariate regressions.
+
+### Machine Learning
+
+* We split our dataset into training and testing sets, and used two machine learning approaches (i.e., decision tree and kNN regression) to predict the three ourcomes. To compare the two approaches, we considered mean square error (MSE) and Pearson correlation coefficient (r) as model performance metrics.
