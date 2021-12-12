@@ -18,10 +18,7 @@ ui <- fluidPage(
     sidebarLayout(
         # left panel: explanatory text and input values
         sidebarPanel(width = 3,
-                     p("It is also reasonable to speculate that the use of contraceptives, by affecting the 
-                     effectiveness of family planning, could then affect the health outcome of the infant and
-                     the mother. One of the outcome of interest is", strong("infant mortality rate"),
-                     "in a country. We also consider other candidate predictors for birth rate, including: 
+                     p("We also consider other candidate predictors for birth rate, including: 
                      abortion law score (1-6, 6 being the strictest), GDP, education level (average number of 
                      years in school), region, and mean age of childbreaing. Please select from below a 
                      specific predictor to explore its relationship with infant mortality rate:"),
@@ -39,6 +36,12 @@ ui <- fluidPage(
         ),
         # right panel: interactive scatter plots for predictors [output$univariate]
         mainPanel(
+            br(),
+            p("It is also reasonable to speculate that the use of contraceptives, by affecting the 
+               effectiveness of family planning, could then affect the health outcome of the infant and
+               the mother. One of the outcome of interest is", strong("infant mortality rate"),
+              "in a country."),
+            br(),
             plotOutput(outputId = "univariate")
         )
     )
@@ -58,7 +61,7 @@ server <- function(input, output){
                            color = region_l)) +
                 geom_boxplot() + 
                 scale_color_discrete(name = "Region") +
-                labs(title = paste0("Relationship between Region and infant mortality rate"),
+                labs(title = paste0("Relationship between Region and Infant Mortality Rate"),
                      x = NULL, y = "Infant Mortality Rate") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
@@ -80,7 +83,7 @@ server <- function(input, output){
                                                       input$predictor == "Average Education Level in Years" ~ c(0, 15),
                                                       input$predictor == "Mean Age of Childbearing" ~ c(25, 35))) +
                 scale_y_continuous(limits = c(0, 85), breaks = seq(0, 85, 5)) +
-                labs(title = paste0("Relationship between ", input$predictor, " and Infant Mortality Rate"),
+                labs(title = paste0("Relationship between ", input$predictor, "\n and Infant Mortality Rate"),
                      x = input$predictor, y = "Infant Mortality Rate") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),

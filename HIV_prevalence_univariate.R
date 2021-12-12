@@ -18,10 +18,7 @@ ui <- fluidPage(
     sidebarLayout(
         # left panel: explanatory text and input values
         sidebarPanel(width = 3,
-                     p("The prevalence of contraceptives can affect not only health outcomes related to 
-                     reproduction, by also affect patterns of sexually-transmitted diseases (STDs) in the 
-                     country. One of the STDs causing great concern is", strong("HIV prevalence"),
-                     "of a country. We also consider other candidate predictors for birth rate, including: 
+                     p("We also consider other candidate predictors for birth rate, including: 
                      abortion law score (1-6, 6 being the strictest), GDP, education level (average number of 
                      years in school), region, and mean age of childbreaing. Please select from below a 
                      specific predictor to explore its relationship with HIV prevalence:"),
@@ -39,6 +36,12 @@ ui <- fluidPage(
         ),
         # right panel: interactive scatter plots for predictors [output$univariate]
         mainPanel(
+            br(),
+            p("The prevalence of contraceptives can affect not only health outcomes related to
+            reproduction, by also affect patterns of sexually-transmitted diseases (STDs) in the 
+            country. One of the STDs causing great concern is", strong("HIV prevalence"),
+              "of a country."),
+            br(),
             plotOutput(outputId = "univariate")
         )
     )
@@ -59,7 +62,7 @@ server <- function(input, output){
                 geom_boxplot() + 
                 scale_y_log10() +
                 scale_color_discrete(name = "Region") +
-                labs(title = paste0("Relationship between Region and infant mortality rate"),
+                labs(title = paste0("Relationship between Region and HIV Prevalence"),
                      x = NULL, y = "HIV Prevalence (%, log-10 scale)") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
@@ -81,7 +84,7 @@ server <- function(input, output){
                                                       input$predictor == "Average Education Level in Years" ~ c(0, 15),
                                                       input$predictor == "Mean Age of Childbearing" ~ c(25, 35))) +
                 scale_y_log10(limits = c(1, 30), breaks = seq(0, 35, 5)) +
-                labs(title = paste0("Relationship between ", input$predictor, " and Infant Mortality Rate"),
+                labs(title = paste0("Relationship between ", input$predictor, "\n and HIV Prevalence"),
                      x = input$predictor, y = "HIV Prevalence (%, log-10 scale)") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),

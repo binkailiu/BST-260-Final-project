@@ -18,9 +18,7 @@ ui <- fluidPage(
     sidebarLayout(
         # left panel: explanatory text and input values
         sidebarPanel(width = 3,
-                     p("It is intuitive to speculate that prevalence of contraceptives could affect the overall 
-                     effectiveness of family planning, thus reflected in the", strong("birth rate"),
-                     "in a country. We also consider other candidate predictors for birth rate, including: 
+                     p("We also consider other candidate predictors for birth rate, including: 
                      abortion law score (1-6, 6 being the strictest), GDP, education level (average number of 
                      years in school), region, and mean age of childbreaing. Please select from below a 
                      specific predictor to explore its relationship with birth rate (per 1K population):"),
@@ -38,6 +36,11 @@ ui <- fluidPage(
         ),
         # right panel: interactive scatter plots for predictors [output$univariate]
         mainPanel(
+            br(),
+            p("It is intuitive to speculate that prevalence of contraceptives could affect the overall 
+               effectiveness of family planning, thus reflected in the", strong("birth rate"),
+              "in a country."),
+            br(),
             plotOutput(outputId = "univariate")
         )
     )
@@ -57,7 +60,7 @@ server <- function(input, output){
                            color = region_l)) +
                 geom_boxplot() + 
                 scale_color_discrete(name = "Region") +
-                labs(title = paste0("Relationship between Region and birth rate"),
+                labs(title = paste0("Relationship between Region and Birth Rate"),
                      x = NULL, y = "Birth Rate (per 1K)") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
@@ -79,7 +82,7 @@ server <- function(input, output){
                                                       input$predictor == "Average Education Level in Years" ~ c(0, 15),
                                                       input$predictor == "Mean Age of Childbearing" ~ c(25, 35))) +
                 scale_y_continuous(limits = c(0, 50), breaks = seq(0, 50, 5)) +
-                labs(title = paste0("Relationship between ", input$predictor, " and Birth Rate"),
+                labs(title = paste0("Relationship between ", input$predictor, "\n and Birth Rate"),
                      x = input$predictor, y = "Birth Rate (per 1K)") + 
                 theme_linedraw() +
                 theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
