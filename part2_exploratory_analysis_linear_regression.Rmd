@@ -1,7 +1,8 @@
 ---
-title: "Exploratory Analysis"
 output: html_document
 ---
+
+## Exploratory Analysis: Univariate Analysis and Linear Regression
 
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 
