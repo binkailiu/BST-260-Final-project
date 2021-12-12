@@ -1,14 +1,15 @@
-## BST 260 Final Project: What should we care about? Contraceptive Use and Health!
+# BST 260 Final Project: What should we care about? Contraceptive Use and Health!
 ### Authors: Binkai (Cathy) Liu, Karla Flores Guzman, Xinhui (Kiera) Zhang, Yichi Zhang, Jiabao (Lily) Zhong
 #### December 12, 2021
 
 This Readme.md file contains a catelog of data sources and files on our github repository. It also includes a brief overview of our study backgrounds, objectives, and methods. Note that all original datasets used for our analysis are accessible through both our github repository and website links in later sections. 
 
+# Catelogs
 ### Catelog of files in github repository
-*Project overview, data read-in and wrangling* "Part1_data_cleaning.rmd"
-*Exploratory analysis (univariate analysis) & Linear regression model* "Part2_exploratory_analysis_linear_regression.rmd"
-*Machine learning models (decision tree & kNN)* "Part3_decision_tree_knn.rmd"
-*Shiny Apps* "Part4_shiny.rmd"
+* *Project overview, data read-in and wrangling* "Part1_data_cleaning.rmd"
+* *Exploratory analysis (univariate analysis) & Linear regression model* "Part2_exploratory_analysis_linear_regression.rmd"
+* *Machine learning models (decision tree & kNN)* "Part3_decision_tree_knn.rmd"
+* *Shiny Apps* "Part4_shiny.rmd"
 
 
 ### Variables, Data sources, and Data descriptions
@@ -51,7 +52,7 @@ Population Dynamics, World Population Prospects 2019, Mean Age of Childbearing.x
 * Data source: [Wikipedia: Abortion Law. Table. Legal grounds on which abortion is permitted in independent countries](https://en.wikipedia.org/wiki/Abortion_law)
 * Data description: This dataset was "web-scrapped" from Wikipedia (Contributer: Binkai (Cathy) Liu), which summarizes the legal grounds for abortion in all United Nations member states and United Nations General Assembly observer states and some countries with limited recognition (202 countries/regions). The data from Wikipedia is mostly based on data compiled by the United Nations up to 2019. We cleaned the dataset and further calculated `Abortion law score` for each country based on the numbers of times that abortion being prohibited in the 6 situations presented in the table, including "Risk to life, risk to health, rape, fetal impairment, economic or social, and on request". The `Abortion law score` ranges from 0-6, with 6 being the most strict on abortion law.
 
-
+# Project overview
 ## Overview and Motivation
 In 2019, over 1 out of 1.9 billion Women of the Reproductive Age group (15-49 years old) worldwide need family planning, according to WHO; of these, around 800 million use contraceptive methods. Unfortunately, almost 300 million have an unmet need for contraception (WHO). Access to contraceptives is heterogeneous around the world. There could be many reasons for the variation in contraceptives use: taboos, lack of sexual education, armed conflicts, to name a few. Also, women’s acceptance could be diminished by religious opposition, fear of side effects, and poor quality of medical counseling and service.
 It is a human right to decide the number and spacing of their children; contraceptives play a crucial role in helping to achieve that right. Moreover, it is well documented that the use of condoms helps to reduce the risk of getting sexually transmitted diseases.
