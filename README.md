@@ -11,7 +11,7 @@ This Readme.md file contains a catelog of data sources and files on our github r
 
 * RMD file: 
   * `part1_data_cleaning.rmd` 
-* Dataset used:
+* Datasets used:
   * `rawdata_birth_rate.xlsx`
   * `rawdata_infant_mortality.csv`
   * `rawdata_HIV_prevalence.csv`
